@@ -1,0 +1,22 @@
+{
+  "env": {
+    "es2020": true,
+    "node": true
+  },
+  "extends": [
+    "prettier",
+    "eslint-config-leapfrog"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "require-jsdoc": 0,
+    "camelcase": 0
+  }
+}
