@@ -54,15 +54,3 @@ CREATE TABLE IF NOT EXISTS "task_tagged_user" (
   "task_id" INT REFERENCES "task"("id") ON DELETE CASCADE NOT NULL,
   "tagged_user_id" INT REFERENCES "user"("id") ON DELETE CASCADE
 );
-INSERT INTO "role" ("id", "type")
-VALUES
-  ('1', 'Admin'),
-  ('2', 'Project Manager'),
-  ('3', 'Team Lead'),
-  ('4', 'Engineer');
-INSERT INTO "permission" ("role_id", "user", "project", "task", "comment")
-VALUES 
-  (1, 'CRUD', 'CRUD', 'CRUD', 'CRUD'),
-  (2, 'R', 'RU', 'CRUD', 'CRUD'),
-  (3, 'R', 'R', 'CRUD', 'CRUD'),
-  (4, 'R', 'R', 'RU', 'CRUD');
