@@ -1,5 +1,14 @@
 import User from '../models/user.model';
 
+export function getAllUsers() {
+  return new User()
+    .fetchAll({
+      withRelated: ['role'],
+      columns: ['id', 'username', 'active', 'role_id']
+    })
+    .then((users) => users.serialize());
+}
+
 export function createUser(data) {
   return new User({
     username: data.username,
@@ -20,7 +29,10 @@ export function getPermissions(id) {
 export function getUser(data) {
   return new User()
     .where(data)
-    .fetch()
+    .fetch({
+      withRelated: ['role'],
+      columns: ['id', 'username', 'active', 'role_id']
+    })
     .then((user) => user.serialize());
 }
 

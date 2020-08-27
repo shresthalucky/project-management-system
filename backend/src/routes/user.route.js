@@ -8,6 +8,13 @@ import { validateToken } from '../middlewares/helper.middlware';
 
 const router = express.Router();
 
+router.get(
+  '/',
+  validateToken,
+  HelperMiddleware.checkPermission('user', permissions.READ),
+  UserController.getAllUsers
+);
+
 // route to register new user
 router.post(
   '/register',
