@@ -1,4 +1,5 @@
 import { SET_MEMBERS, ADD_MEMBER } from '../actions/memberActions';
+import { LOGOUT_USER } from '../actions/userActions';
 
 const INITIAL = {
   isLoading: true,
@@ -19,6 +20,9 @@ function memberReducer(state = INITIAL, action) {
         ...state,
         users: [...state.users, action.payload]
       };
+
+    case LOGOUT_USER:
+      return INITIAL;
 
     default:
       return state;

@@ -1,4 +1,5 @@
 import { SET_PROJECTS_LIST, SET_PROJECTS_DETAIL } from '../actions/projectActions';
+import { LOGOUT_USER } from '../actions/userActions';
 
 const INITIAL = {
   projectsList: [],
@@ -23,6 +24,9 @@ function projectReducer(state = INITIAL, action) {
           [action.payload['id']]: action.payload
         }
       };
+
+    case LOGOUT_USER:
+      return INITIAL;
 
     default:
       return state;

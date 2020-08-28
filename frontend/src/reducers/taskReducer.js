@@ -1,4 +1,5 @@
 import { SET_TASKS_LIST, SET_TASKS_DETAIL, SET_PROJECT_TASKS_LIST } from '../actions/taskActions';
+import { LOGOUT_USER } from '../actions/userActions';
 
 const INITIAL = {
   tasksList: [],
@@ -33,6 +34,9 @@ function taskReducer(state = INITIAL, action) {
           [action.payload['id']]: action.payload
         }
       };
+
+    case LOGOUT_USER:
+      return INITIAL;
 
     default:
       return state;
