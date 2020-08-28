@@ -1,14 +1,14 @@
 import { combineReducers } from 'redux';
 
-import userReducer from './userReducer';
+import authReducer from './authReducer';
 import taskReducer from './taskReducer';
-import memberReducer from './memberReducer';
+import userReducer from './userReducer';
 import projectReducer from './projectReducer';
 import commentReducer from './commentReducer';
 
 const reducer = combineReducers({
+  auth: authReducer,
   user: userReducer,
-  member: memberReducer,
   project: projectReducer,
   task: taskReducer,
   comment: commentReducer

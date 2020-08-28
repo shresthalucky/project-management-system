@@ -48,3 +48,14 @@ export function updateUser(id, data) {
     )
     .then((user) => user.serialize());
 }
+
+export function deleteUser(id) {
+  return new User({ id })
+    .save(
+      {
+        active: false
+      },
+      { patch: true }
+    )
+    .then((user) => user.serialize());
+}

@@ -16,6 +16,13 @@ router.get(
   UserController.getAllUsers
 );
 
+router.delete(
+  '/:id',
+  validateToken,
+  HelperMiddleware.checkPermission('user', permissions.DELETE),
+  UserController.deleteUser
+);
+
 // route to register new user
 router.post(
   '/register',

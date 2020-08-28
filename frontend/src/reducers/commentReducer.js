@@ -1,5 +1,5 @@
 import { SET_COMMENTS_LIST } from '../actions/commentActions';
-import { LOGOUT_USER } from '../actions/userActions';
+import { LOGOUT_AUTH } from '../actions/authActions';
 
 const INITIAL = {
   commentsList: {}
@@ -16,7 +16,7 @@ function taskReducer(state = INITIAL, action) {
         }
       };
 
-    case LOGOUT_USER:
+    case LOGOUT_AUTH:
       return INITIAL;
 
     default:

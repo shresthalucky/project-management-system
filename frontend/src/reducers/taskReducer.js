@@ -1,5 +1,5 @@
 import { SET_TASKS_LIST, SET_TASKS_DETAIL, SET_PROJECT_TASKS_LIST } from '../actions/taskActions';
-import { LOGOUT_USER } from '../actions/userActions';
+import { LOGOUT_AUTH } from '../actions/authActions';
 
 const INITIAL = {
   tasksList: [],
@@ -35,7 +35,7 @@ function taskReducer(state = INITIAL, action) {
         }
       };
 
-    case LOGOUT_USER:
+    case LOGOUT_AUTH:
       return INITIAL;
 
     default:

@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Routes from './routes';
-import { setUser } from './actions/userActions';
+import { setAuth } from './actions/authActions';
 
 class App extends React.Component {
 
   componentDidMount() {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem('auth');
     
     if(user) {
-      this.props.setUser(JSON.parse(user));
+      this.props.setAuth(JSON.parse(user));
     }
   }
 
@@ -21,16 +21,10 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    user: state.user
-  };
-};
-
 const mapDispatchToProps = dispatch => {
   return {
-    setUser: (user) => dispatch(setUser(user))
+    setAuth: (user) => dispatch(setAuth(user))
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(App);

@@ -1,30 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Container, Button } from 'react-bootstrap';
 
 import Nav from '../Nav';
-import { logoutUser } from '../../actions/userActions';
+import { logoutAuth } from '../../actions/authActions';
 
 function Layout({ children, ...props }) {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    props.logoutUser();
+    props.logoutAuth();
   }
 
   return (
-    <div>
-      <Nav />
-      <button onClick={handleLogout}>Logout</button>
-      <main>
+    <Container>
+      <Nav logoutHandler={handleLogout} />
+      <main className="mt-5">
         {children}
       </main>
-    </div>
+    </Container>
   );
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    logoutUser: () => dispatch(logoutUser()),
+    logoutAuth: () => dispatch(logoutAuth()),
   };
 };
 

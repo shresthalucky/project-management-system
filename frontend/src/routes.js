@@ -18,7 +18,7 @@ function Routes(props) {
           path='/login'
           render={renderProps => <Login {...renderProps} />} />
 
-        <AuthRoute path='/' user={props.user}>
+        <AuthRoute path='/' auth={props.auth}>
           <Layout>
             <Route exact path="/projects" component={Project} />
             <Route exact path="/users" component={User} />
@@ -32,17 +32,17 @@ function Routes(props) {
   );
 }
 
-function AuthRoute({ user, children, ...props }) {
+function AuthRoute({ auth, children, ...props }) {
   return (
     <Route {...props} render={({ location }) => (
-      user.token ? children : <Redirect to={{ pathname: '/login', state: { from: location } }} />
+      auth.token ? children : <Redirect to={{ pathname: '/login', state: { from: location } }} />
     )} />
   );
 }
 
 const mapStateToProps = state => {
   return {
-    user: state.user
+    auth: state.auth
   };
 };
 

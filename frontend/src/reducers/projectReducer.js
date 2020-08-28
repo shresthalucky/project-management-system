@@ -1,5 +1,5 @@
 import { SET_PROJECTS_LIST, SET_PROJECTS_DETAIL } from '../actions/projectActions';
-import { LOGOUT_USER } from '../actions/userActions';
+import { LOGOUT_AUTH } from '../actions/authActions';
 
 const INITIAL = {
   projectsList: [],
@@ -25,7 +25,7 @@ function projectReducer(state = INITIAL, action) {
         }
       };
 
-    case LOGOUT_USER:
+    case LOGOUT_AUTH:
       return INITIAL;
 
     default:

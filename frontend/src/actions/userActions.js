@@ -1,11 +1,6 @@
-export const SET_USER = 'SET_USER';
-export const LOGOUT_USER = 'LOGOUT_USER';
+export const SET_USERS = 'SET_USERS';
 
-export const setUser = (user) => ({
-  type: SET_USER,
-  payload: user
-});
-
-export const logoutUser = () => ({
-  type: LOGOUT_USER
+export const setUsers = (users) => ({
+  type: SET_USERS,
+  payload: users
 });

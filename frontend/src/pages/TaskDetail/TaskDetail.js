@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Card } from 'react-bootstrap';
 
 import Api from '../../api/ApiUtils';
 import { setTasksDetail } from '../../actions/taskActions';
@@ -97,14 +98,16 @@ class TaskDetail extends React.Component {
 
     return (
       <div>
-        <h1>{this.state.task.title}</h1>
+        <Card body className="mb-3">
+          <h1>{this.state.task.title}</h1>
+        </Card>
 
         <div>
-          <p>Comments</p>
+          <p>{comments.length} Comments</p>
           {this.state.commentsLoading ? 'loading' : comments.map(comment => {
             return (
               <div key={comment.id}>
-                <p>{comment.text}</p>
+                <p><b>{comment.user.username}</b> {comment.text}</p>
               </div>
             )
           })}

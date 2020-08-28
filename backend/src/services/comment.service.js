@@ -10,7 +10,15 @@ export function getComment(id) {
 export function getAllComments(taskId) {
   return new Comment()
     .where({ task_id: taskId })
-    .fetchAll()
+    .fetchAll({
+      withRelated: [
+        {
+          user: (qb) => {
+            qb.column('id', 'username', 'role_id');
+          }
+        }
+      ]
+    })
     .then((comments) => comments.serialize());
 }
 

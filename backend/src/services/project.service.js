@@ -69,6 +69,11 @@ export function getProject(id) {
           users: (qb) => {
             qb.column('id', 'username', 'role_id');
           }
+        },
+        {
+          projectManager: (qb) => {
+            qb.column('id', 'username');
+          }
         }
       ]
     })

@@ -13,6 +13,15 @@ export async function getAllUsers(req, res, next) {
   }
 }
 
+export async function deleteUser(req, res, next) {
+  try {
+    await UserServices.deleteUser(req.params.id);
+    res.status(HttpStatus.NO_CONTENT).end();
+  } catch (err) {
+    next(new DatabaseError('Cannot delete user'));
+  }
+}
+
 export async function getUserByUsername(req, res, next) {
   try {
     const user = await UserServices.getUser({ username: req.body.username }, [
@@ -64,7 +73,7 @@ export function loginUser(req, res, next) {
 export async function createUser(req, res, next) {
   try {
     const user = await UserServices.createUser(req.body);
-    const userRes = await UserServices.getUser({ id: user.id });
+    const userRes = await UserServices.getUser({ id: user.id }, ['id', 'username', 'active', 'role_id']);
 
     res.status(HttpStatus.CREATED).json(userRes);
   } catch (err) {

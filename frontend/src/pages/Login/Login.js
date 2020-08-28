@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import Api from '../../api/ApiUtils';
-import { setUser } from '../../actions/userActions';
+import { setAuth } from '../../actions/authActions';
 
 class Login extends React.Component {
 
@@ -16,8 +16,8 @@ class Login extends React.Component {
     })
       .then(res => {
         console.log(res.data)
-        this.props.setUser(res.data);
-        localStorage.setItem('user', JSON.stringify(res.data));
+        this.props.setAuth(res.data);
+        localStorage.setItem('auth', JSON.stringify(res.data));
       })
       .catch(err => {
 
@@ -29,7 +29,7 @@ class Login extends React.Component {
 
     const { from } = this.props.location.state || { from: { pathname: '/' } }
 
-    if (this.props.user.token) {
+    if (this.props.auth.token) {
       return <Redirect to={from} />
     }
 
@@ -53,13 +53,13 @@ class Login extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    user: state.user
+    auth: state.auth
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setUser: (user) => dispatch(setUser(user))
+    setAuth: (user) => dispatch(setAuth(user))
   };
 };
 

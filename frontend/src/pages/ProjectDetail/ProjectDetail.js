@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Card } from 'react-bootstrap';
 
 import Api from '../../api/ApiUtils';
 import { setProjectTasksList } from '../../actions/taskActions';
@@ -59,7 +60,7 @@ class ProjectDetail extends React.Component {
   fetchTasks = () => {
     Api.get(`/projects/${this.projectId}/tasks`)
       .then(res => {
-        
+
         this.setState({
           tasks: res.data,
           tasksLoading: false
@@ -72,18 +73,28 @@ class ProjectDetail extends React.Component {
 
   render() {
 
+    const project = this.state.project;
+
     return (
       <div>
-        <h1>{this.state.projectLoading ? 'loading' : this.state.project.name}</h1>
+        {this.state.projectLoading ? 'loading' :
+          <Card body className="mb-3">
+            <h1>{project.name}</h1>
+            <p>Project Manager: <strong>{project.projectManager.username}</strong></p>
+            <p>{project.description}</p>
+          </Card>
+        }
+
+        <p>{this.state.tasks.length} Tasks</p>
 
         {this.state.tasksLoading ? 'loading' : this.state.tasks.map(task => {
           return (
-            <div key={task.id}>
+            <Card body key={task.id}>
               <h3><Link to={`/projects/${this.projectId}/tasks/${task.id}`}>{task.title}</Link></h3>
-            </div>
+            </Card>
           )
         })}
-      
+
       </div>
     );
   }

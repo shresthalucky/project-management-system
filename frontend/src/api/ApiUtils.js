@@ -12,7 +12,7 @@ const instance = axois.create({
 
 instance.interceptors.request.use(config => {
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem('auth'));
   const token = user ? user.token : '';
 
   if (token) {

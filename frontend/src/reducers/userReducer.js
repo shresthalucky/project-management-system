@@ -1,16 +1,19 @@
-import { SET_USER, LOGOUT_USER } from '../actions/userActions';
+import { SET_USERS } from '../actions/userActions';
+import { LOGOUT_AUTH } from '../actions/authActions';
 
-const INITIAL = {};
+const INITIAL = {
+  users: []
+};
 
 function userReducer(state = INITIAL, action) {
   switch (action.type) {
-    case SET_USER:
+    case SET_USERS:
       return {
         ...state,
-        ...action.payload
+        users: [...action.payload]
       };
 
-    case LOGOUT_USER:
+    case LOGOUT_AUTH:
       return INITIAL;
 
     default:
