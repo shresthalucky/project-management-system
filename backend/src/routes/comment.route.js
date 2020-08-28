@@ -1,9 +1,10 @@
 import express from 'express';
 
-import * as CommentController from '../controllers/comment.controller';
-import * as HelperMiddleware from '../middlewares/helper.middlware';
 import { permissions } from '../helpers/permission.helper';
-import { validateToken } from '../middlewares/helper.middlware';
+import commentSchema from '../validators/comment.validator';
+import * as HelperMiddleware from '../middlewares/helper.middlware';
+import * as CommentController from '../controllers/comment.controller';
+import { validateToken, requestValidator } from '../middlewares/helper.middlware';
 
 const router = express.Router({ mergeParams: true });
 
@@ -18,6 +19,7 @@ router.post(
   '/',
   validateToken,
   HelperMiddleware.checkPermission('comment', permissions.CREATE),
+  requestValidator(commentSchema),
   CommentController.createComment
 );
 
@@ -25,6 +27,7 @@ router.put(
   '/:id',
   validateToken,
   HelperMiddleware.checkPermission('comment', permissions.UPDATE),
+  requestValidator(commentSchema),
   CommentController.checkCommentOwner,
   CommentController.updateComment
 );

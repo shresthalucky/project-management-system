@@ -5,7 +5,7 @@ import { UnauthorizedError } from '../helpers/error.helper';
 
 export async function createComment(req, res, next) {
   try {
-    const comment = await CommentServices.createComment(req.params.taskId, req.body, req.user.id);
+    const comment = await CommentServices.createComment(req.params.taskId, req.body, req.loggedUser.id);
 
     res.status(HttpStatus.CREATED).json(comment);
   } catch (err) {
@@ -37,7 +37,7 @@ export async function checkCommentOwner(req, res, next) {
   try {
     const comment = await CommentServices.getComment(req.params.id);
 
-    if (comment['user_id'] === req.user.id) {
+    if (comment['user_id'] === req.loggedUser.id) {
       next();
 
       return;

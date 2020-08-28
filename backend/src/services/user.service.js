@@ -26,12 +26,12 @@ export function getPermissions(id) {
     .then((user) => user.related('permission').serialize());
 }
 
-export function getUser(data) {
+export function getUser(data, columns) {
   return new User()
     .where(data)
     .fetch({
       withRelated: ['role'],
-      columns: ['id', 'username', 'active', 'role_id']
+      columns: columns
     })
     .then((user) => user.serialize());
 }

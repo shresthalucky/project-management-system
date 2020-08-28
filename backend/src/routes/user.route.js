@@ -4,7 +4,8 @@ import * as UserController from '../controllers/user.controller';
 import * as UserMiddleware from '../middlewares/user.middleware';
 import * as HelperMiddleware from '../middlewares/helper.middlware';
 import { permissions } from '../helpers/permission.helper';
-import { validateToken } from '../middlewares/helper.middlware';
+import userSchema from '../validators/user.validator';
+import { validateToken, requestValidator } from '../middlewares/helper.middlware';
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.post(
   '/register',
   validateToken,
   HelperMiddleware.checkPermission('user', permissions.CREATE),
+  requestValidator(userSchema),
   UserMiddleware.generatePassword,
   UserController.createUser
 );
@@ -27,6 +29,7 @@ router.post(
 // route to login user
 router.post(
   '/login',
+  requestValidator(userSchema),
   UserController.getUserByUsername,
   UserMiddleware.validatePassword,
   UserController.getPermissions,
@@ -38,7 +41,8 @@ router.put(
   '/:id',
   validateToken,
   HelperMiddleware.checkPermission('user', permissions.UPDATE),
-  UserController.getUserById,
+  requestValidator(userSchema),
+  UserController.getUserByUsername,
   UserMiddleware.validatePassword,
   UserMiddleware.hasNewPassword,
   UserController.updateUser

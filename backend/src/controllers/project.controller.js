@@ -36,7 +36,7 @@ export async function updateProject(req, res, next) {
 
 export async function getUserProjects(req, res, next) {
   try {
-    const projects = await ProjectServices.getUserProjects(req.user.id);
+    const projects = await ProjectServices.getUserProjects(req.loggedUser.id);
 
     res.status(HttpStatus.OK).json(projects);
   } catch (err) {

@@ -1,10 +1,11 @@
 import express from 'express';
 
+import CommentRoutes from '../routes/comment.route';
+import taskValidator from '../validators/task.validator';
+import { permissions } from '../helpers/permission.helper';
 import * as TaskController from '../controllers/task.controller';
 import * as HelperMiddleware from '../middlewares/helper.middlware';
-import CommentRoutes from '../routes/comment.route';
-import { permissions } from '../helpers/permission.helper';
-import { validateToken } from '../middlewares/helper.middlware';
+import { validateToken, requestValidator } from '../middlewares/helper.middlware';
 
 const router = express.Router({ mergeParams: true });
 
@@ -16,6 +17,7 @@ router.post(
   '/',
   validateToken,
   HelperMiddleware.checkPermission('task', permissions.CREATE),
+  requestValidator(taskValidator),
   TaskController.checkValidAssignee,
   TaskController.createTask
 );
@@ -24,6 +26,7 @@ router.put(
   '/:taskId',
   validateToken,
   HelperMiddleware.checkPermission('task', permissions.UPDATE),
+  requestValidator(taskValidator),
   TaskController.checkValidAssignee,
   TaskController.updateTask
 );

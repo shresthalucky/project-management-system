@@ -20,19 +20,37 @@ export function validateToken(req, res, next) {
     if (err) {
       next(new BadRequestError('Invalid Token'));
     }
-    req.user = decoded;
-    req.user.token = token;
+    console.log(decoded)
+    req.loggedUser = decoded;
+    req.loggedUser.token = token;
     next();
   });
 }
 
 export function checkPermission(type, action) {
   return (req, res, next) => {
-    if (req.user.permissions[type].includes(action)) {
+    if (req.loggedUser.permissions[type].includes(action)) {
       next();
 
       return;
     }
     next(new UnauthorizedError('Unauthorized'));
+  };
+}
+
+/**
+ * Validate request body.
+ *
+ * @param {Object} schema
+ * @returns {Function} Middleware.
+ */
+export function requestValidator(schema) {
+  return async (req, res, next) => {
+    try {
+      await schema.validateAsync(req.body);
+      next();
+    } catch (err) {
+      next(new BadRequestError(err.message));
+    }
   };
 }

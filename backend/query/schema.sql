@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS "task" (
 );
 CREATE TABLE IF NOT EXISTS "comment" (
   "id" SERIAL PRIMARY KEY,
-  "text" VARCHAR(100) NOT NULL UNIQUE,
+  "text" VARCHAR(500) NOT NULL UNIQUE,
   "task_id" INT REFERENCES "task"("id") ON DELETE CASCADE NOT NULL,
   "user_id" INT REFERENCES "user"("id"),
   "created_at" TIMESTAMP,

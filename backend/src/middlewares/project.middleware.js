@@ -8,7 +8,7 @@ export function responseProject(req, res) {
 }
 
 export function checkProjectAssignee(req, res, next) {
-  if (req.user['role_id'] === roles.ADMIN || req.project['project_manager_id'] === req.user.id) {
+  if (req.loggedUser.roleId === roles.ADMIN || req.project['project_manager_id'] === req.user.id) {
     next();
 
     return;
@@ -19,9 +19,9 @@ export function checkProjectAssignee(req, res, next) {
 
 export function checkProjectUsers(req, res, next) {
   if (
-    req.user['role_id'] === roles.ADMIN ||
-    req.project['project_manager_id'] === req.user.id ||
-    req.project.users.some((user) => user.id === req.user.id)
+    req.loggedUser.roleId === roles.ADMIN ||
+    req.project['project_manager_id'] === req.loggedUser.id ||
+    req.project.users.some((user) => user.id === req.loggedUser.id)
   ) {
     next();
 

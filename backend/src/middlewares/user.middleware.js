@@ -40,7 +40,7 @@ export function generatePassword(req, res, next) {
  */
 export function generateToken(req, res, next) {
   jwt.sign(
-    { id: req.user.id, username: req.user.username, permissions: req.user.permissions },
+    { id: req.user.id, username: req.user.username, permissions: req.user.permissions, roleId: req.user['role_id'] },
     process.env.JWT_KEY,
     { algorithm: 'HS256' },
     (err, token) => {

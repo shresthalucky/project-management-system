@@ -15,7 +15,13 @@ export async function getAllUsers(req, res, next) {
 
 export async function getUserByUsername(req, res, next) {
   try {
-    const user = await UserServices.getUser({ username: req.body.username });
+    const user = await UserServices.getUser({ username: req.body.username }, [
+      'id',
+      'username',
+      'active',
+      'role_id',
+      'password'
+    ]);
 
     req.user = user;
     next();
@@ -26,7 +32,7 @@ export async function getUserByUsername(req, res, next) {
 
 export async function getUserById(req, res, next) {
   try {
-    const user = await UserServices.getUser({ id: req.params.id });
+    const user = await UserServices.getUser({ id: req.params.id }, ['id', 'username', 'active', 'role_id']);
 
     req.user = user;
     next();
@@ -74,7 +80,7 @@ export async function updateUser(req, res, next) {
       id: user.id,
       username: user.username,
       roleId: user.role_id,
-      active: user.active
+      active: req.body.active
     });
   } catch (err) {
     console.log(err);
