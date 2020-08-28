@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import Api from '../../api/ApiUtils';
 import { setTasksDetail } from '../../actions/taskActions';
+import { setCommentsList } from '../../actions/commentActions';
 import { setProjectsDetail } from '../../actions/projectActions';
 
 class TaskDetail extends React.Component {
@@ -16,8 +17,10 @@ class TaskDetail extends React.Component {
     this.state = {
       project: {},
       task: {},
+      comments: [],
       projectLoading: true,
-      taskLoading: true
+      taskLoading: true,
+      commentsLoading: true
     }
   }
 
@@ -25,6 +28,7 @@ class TaskDetail extends React.Component {
 
     const project = this.props.projectsDetail[this.projectId];
     const task = this.props.tasksDetail[this.taskId];
+    const comments = this.props.commentsList[this.taskId];
 
     if (project) {
       this.setState({
@@ -33,10 +37,17 @@ class TaskDetail extends React.Component {
       });
     }
 
-    if(task) {
+    if (task) {
       this.setState({
         task: task,
         taskLoading: false
+      });
+    }
+
+    if (comments) {
+      this.setState({
+        comments: comments,
+        commentsLoading: false
       });
     }
 
@@ -55,33 +66,49 @@ class TaskDetail extends React.Component {
 
     Api.get(`/projects/${this.projectId}/tasks/${this.taskId}`)
       .then(res => {
-        
+
         this.setState({
           task: res.data,
           taskLoading: false
         });
-        
+
         this.props.setTasksDetail(res.data);
       })
       .catch(err => console.log(err));
 
+
+    Api.get(`/projects/${this.projectId}/tasks/${this.taskId}/comments`)
+      .then(res => {
+
+        this.setState({
+          comments: res.data,
+          commentsLoading: false
+        });
+
+        this.props.setCommentsList(this.taskId, res.data);
+
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
 
-    // const task = this.state.tasks;
+    const comments = this.state.comments;
 
     return (
       <div>
         <h1>{this.state.task.title}</h1>
 
-        {/* {tasks.map(task => {
-          return (
-            <div key={task.id}>
-              <h3><Link to={`/projects/${this.projectId}/tasks/${task.id}`}>{task.title}</Link></h3>
-            </div>
-          )
-        })} */}
+        <div>
+          <p>Comments</p>
+          {this.state.commentsLoading ? 'loading' : comments.map(comment => {
+            return (
+              <div key={comment.id}>
+                <p>{comment.text}</p>
+              </div>
+            )
+          })}
+        </div>
 
       </div>
     );
@@ -92,15 +119,16 @@ class TaskDetail extends React.Component {
 const mapStateToProps = state => {
   return {
     projectsDetail: state.project.projectsDetail,
-    tasksDetail: state.task.tasksDetail
+    tasksDetail: state.task.tasksDetail,
+    commentsList: state.comment.commentsList
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     setProjectsDetail: (project) => dispatch(setProjectsDetail(project)),
-    // setProjectTasksList: (projectId, tasksList) => dispatch(setProjectTasksList(projectId, tasksList))
-    setTasksDetail: (task) => dispatch(setTasksDetail(task))
+    setTasksDetail: (task) => dispatch(setTasksDetail(task)),
+    setCommentsList: (taskId, comments) => dispatch(setCommentsList(taskId, comments))
   };
 };
 
