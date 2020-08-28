@@ -25,6 +25,16 @@ export async function getAllTasks(req, res, next) {
   }
 }
 
+export async function getTask(req, res, next) {
+  try {
+    const task = await TaskServices.getTask(req.params.taskId);
+
+    res.status(HttpStatus.OK).json(task);
+  } catch (err) {
+    next(new DatabaseError('Cannot get task'));
+  }
+}
+
 export async function updateTask(req, res, next) {
   try {
     await TaskServices.updateTask(req.params.taskId, req.body);

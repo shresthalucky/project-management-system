@@ -6,6 +6,8 @@ import User from './pages/User';
 import Login from './pages/Login';
 import Project from './pages/Project';
 import Layout from './components/Layout';
+import TaskDetail from './pages/TaskDetail';
+import ProjectDetail from './pages/ProjectDetail';
 
 function Routes(props) {
   return (
@@ -18,8 +20,10 @@ function Routes(props) {
 
         <AuthRoute path='/' user={props.user}>
           <Layout>
-            <Route path="/projects" component={Project} />
-            <Route path="/users" component={User} />
+            <Route exact path="/projects" component={Project} />
+            <Route exact path="/users" component={User} />
+            <Route exact path="/projects/:projectId" component={ProjectDetail} />
+            <Route exact path="/projects/:projectId/tasks/:taskId" component={TaskDetail} />
           </Layout>
         </AuthRoute>
 

@@ -21,7 +21,7 @@ router.get(
 );
 
 router.get(
-  '/projectId',
+  '/:projectId',
   validateToken,
   HelperMiddleware.checkPermission('project', permissions.READ),
   ProjectController.getProject,
@@ -37,7 +37,7 @@ router.post(
 );
 
 router.delete(
-  '/projectId',
+  '/:projectId',
   validateToken,
   HelperMiddleware.checkPermission('project', permissions.DELETE),
   ProjectController.getProject,
@@ -46,7 +46,7 @@ router.delete(
 );
 
 router.put(
-  '/projectId',
+  '/:projectId',
   validateToken,
   HelperMiddleware.checkPermission('project', permissions.UPDATE),
   ProjectController.getProject,

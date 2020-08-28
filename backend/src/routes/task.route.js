@@ -13,6 +13,13 @@ router.use('/:taskId/comments', CommentRoutes);
 
 router.get('/', validateToken, HelperMiddleware.checkPermission('task', permissions.READ), TaskController.getAllTasks);
 
+router.get(
+  '/:taskId',
+  validateToken,
+  HelperMiddleware.checkPermission('task', permissions.READ),
+  TaskController.getTask
+);
+
 router.post(
   '/',
   validateToken,
