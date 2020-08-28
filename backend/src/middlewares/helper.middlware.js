@@ -20,7 +20,6 @@ export function validateToken(req, res, next) {
     if (err) {
       next(new BadRequestError('Invalid Token'));
     }
-    console.log(decoded)
     req.loggedUser = decoded;
     req.loggedUser.token = token;
     next();

@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status-codes';
 
 import * as ProjectServices from '../services/project.service';
-import { UnauthorizedError } from '../helpers/error.helper';
+import { UnauthorizedError, DatabaseError } from '../helpers/error.helper';
 
 export async function createProject(req, res, next) {
   try {
@@ -9,7 +9,7 @@ export async function createProject(req, res, next) {
 
     res.status(HttpStatus.CREATED).json(project);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot create project'));
   }
 }
 
@@ -19,7 +19,7 @@ export async function deleteProject(req, res, next) {
 
     res.status(HttpStatus.NO_CONTENT).end();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot delete project'));
   }
 }
 
@@ -30,7 +30,7 @@ export async function updateProject(req, res, next) {
 
     res.status(HttpStatus.ACCEPTED).json(project);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot update project'));
   }
 }
 
@@ -40,7 +40,7 @@ export async function getUserProjects(req, res, next) {
 
     res.status(HttpStatus.OK).json(projects);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot get projects'));
   }
 }
 
@@ -50,7 +50,7 @@ export async function getAllProjects(req, res, next) {
 
     res.status(HttpStatus.OK).json(projects);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot get projects'));
   }
 }
 
@@ -61,6 +61,6 @@ export async function getProject(req, res, next) {
     req.project = project;
     next();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot get project'));
   }
 }

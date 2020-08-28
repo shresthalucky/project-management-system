@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status-codes';
 
 import * as UserServices from '../services/user.service';
-import { UnauthorizedError } from '../helpers/error.helper';
+import { DatabaseError } from '../helpers/error.helper';
 
 export async function getAllUsers(req, res, next) {
   try {
@@ -9,7 +9,7 @@ export async function getAllUsers(req, res, next) {
 
     res.status(HttpStatus.OK).json(user);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot get users'));
   }
 }
 
@@ -26,7 +26,7 @@ export async function getUserByUsername(req, res, next) {
     req.user = user;
     next();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot find user'));
   }
 }
 
@@ -37,7 +37,7 @@ export async function getUserById(req, res, next) {
     req.user = user;
     next();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot find user'));
   }
 }
 
@@ -48,7 +48,7 @@ export async function getPermissions(req, res, next) {
     req.user.permissions = permissions;
     next();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError());
   }
 }
 
@@ -68,7 +68,7 @@ export async function createUser(req, res, next) {
 
     res.status(HttpStatus.CREATED).json(userRes);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot create user'));
   }
 }
 
@@ -83,6 +83,6 @@ export async function updateUser(req, res, next) {
       active: req.body.active
     });
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot update user'));
   }
 }

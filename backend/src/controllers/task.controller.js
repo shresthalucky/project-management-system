@@ -2,7 +2,7 @@ import HttpStatus from 'http-status-codes';
 
 import * as UserServices from '../services/user.service';
 import * as TaskServices from '../services/task.service';
-import { ServerError, BadRequestError } from '../helpers/error.helper';
+import { BadRequestError, DatabaseError } from '../helpers/error.helper';
 import { roles } from '../helpers/permission.helper';
 
 export async function createTask(req, res, next) {
@@ -11,7 +11,7 @@ export async function createTask(req, res, next) {
 
     res.status(HttpStatus.CREATED).json(task);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot create task'));
   }
 }
 
@@ -21,7 +21,7 @@ export async function getAllTasks(req, res, next) {
 
     res.status(HttpStatus.OK).json(tasks);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot get tasks'));
   }
 }
 
@@ -32,7 +32,7 @@ export async function updateTask(req, res, next) {
 
     res.status(HttpStatus.CREATED).json(task);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot update task'));
   }
 }
 
@@ -41,15 +41,15 @@ export async function checkValidAssignee(req, res, next) {
     try {
       const user = await UserServices.getUser({ id: req.body.assigneeId });
 
-      if (user['role_id'] === roles.PROJECT_MANAGER || user['role_id'] === roles.TEAM_LEAD) {
+      if (user['role_id'] === roles.ENGINEER || user['role_id'] === roles.TEAM_LEAD) {
         next();
 
         return;
       }
 
-      next(new BadRequestError());
+      next(new BadRequestError('Task can only be assigned to Team Lead or Engineer'));
     } catch (err) {
-      next(new ServerError());
+      next(new DatabaseError('Cannot assign task'));
     }
   }
   next();
@@ -61,6 +61,6 @@ export async function deleteTask(req, res, next) {
 
     res.status(HttpStatus.NO_CONTENT).end();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot delete task'));
   }
 }

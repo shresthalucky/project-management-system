@@ -1,7 +1,7 @@
 import HttpStatus from 'http-status-codes';
 
 import * as CommentServices from '../services/comment.service';
-import { UnauthorizedError } from '../helpers/error.helper';
+import { UnauthorizedError, DatabaseError } from '../helpers/error.helper';
 
 export async function createComment(req, res, next) {
   try {
@@ -9,7 +9,7 @@ export async function createComment(req, res, next) {
 
     res.status(HttpStatus.CREATED).json(comment);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot add comment'));
   }
 }
 
@@ -19,7 +19,7 @@ export async function getAllComments(req, res, next) {
 
     res.status(HttpStatus.OK).json(comments);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot get comments'));
   }
 }
 
@@ -29,7 +29,7 @@ export async function updateComment(req, res, next) {
 
     res.status(HttpStatus.CREATED).json(comment);
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot update comment'));
   }
 }
 
@@ -44,7 +44,7 @@ export async function checkCommentOwner(req, res, next) {
     }
     next(new UnauthorizedError());
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError());
   }
 }
 
@@ -54,6 +54,6 @@ export async function deleteComment(req, res, next) {
 
     res.status(HttpStatus.NO_CONTENT).end();
   } catch (err) {
-    console.log(err);
+    next(new DatabaseError('Cannot delete comment'));
   }
 }
