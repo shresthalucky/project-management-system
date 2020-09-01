@@ -66,7 +66,7 @@ export function loginUser(req, res, next) {
     token: req.user.token,
     id: req.user.id,
     username: req.user.username,
-    roleId: req.user.role_id
+    role: req.user.role
   });
 }
 

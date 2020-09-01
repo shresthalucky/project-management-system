@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Container, Button } from 'react-bootstrap';
+import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
-import Nav from '../Nav';
+import AppNav from '../AppNav';
 import { logoutAuth } from '../../actions/authActions';
 
-function Layout({ children, ...props }) {
+function Layout({ children, auth, ...props }) {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -13,13 +13,37 @@ function Layout({ children, ...props }) {
   }
 
   return (
-    <Container>
-      <Nav logoutHandler={handleLogout} />
+    <div>
+      <Navbar bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand href="/">PMS</Navbar.Brand>
+          <AppNav auth={auth} />
+          <Nav>
+            <NavDropdown alignRight title={auth.username} id="nav-dropdown">
+              <NavDropdown.Header>
+                {auth.role.type}
+              </NavDropdown.Header>
+              <NavDropdown.Divider />
+              <NavDropdown.Item>Settings</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}>Log out</NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
+        </Container>
+      </Navbar>
+
       <main className="mt-5">
-        {children}
+        <Container>
+          {children}
+        </Container>
       </main>
-    </Container>
+    </div>
   );
+}
+
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  };
 }
 
 const mapDispatchToProps = dispatch => {
@@ -28,4 +52,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(Layout);
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);
