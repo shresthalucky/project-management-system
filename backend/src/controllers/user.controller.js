@@ -41,7 +41,7 @@ export async function getUserByUsername(req, res, next) {
 
 export async function getUserById(req, res, next) {
   try {
-    const user = await UserServices.getUser({ id: req.params.id }, ['id', 'username', 'active', 'role_id']);
+    const user = await UserServices.getUser({ id: req.params.id }, ['id', 'username', 'active', 'role_id', 'password']);
 
     req.user = user;
     next();
@@ -83,14 +83,10 @@ export async function createUser(req, res, next) {
 
 export async function updateUser(req, res, next) {
   try {
-    const user = await UserServices.updateUser(req.params.id, req.body);
+    const updatedUser = await UserServices.updateUser(req.params.id, req.body);
+    const user = await UserServices.getUser({ id: updatedUser.id }, ['id', 'username', 'active', 'role_id']);
 
-    res.status(HttpStatus.ACCEPTED).json({
-      id: user.id,
-      username: user.username,
-      roleId: user.role_id,
-      active: req.body.active
-    });
+    res.status(HttpStatus.ACCEPTED).json(user);
   } catch (err) {
     next(new DatabaseError('Cannot update user'));
   }

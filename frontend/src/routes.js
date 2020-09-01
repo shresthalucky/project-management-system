@@ -5,11 +5,16 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import User from './pages/User';
 import Login from './pages/Login';
 import Project from './pages/Project';
+import withUsers from './hoc/withUsers';
 import Layout from './components/Layout';
 import TaskDetail from './pages/TaskDetail';
 import ProjectDetail from './pages/ProjectDetail';
+import { roles } from './roles';
 
 function Routes(props) {
+
+  const authRole = props.auth.role ? props.auth.role.id : 0;
+
   return (
     <Router basename={process.env.PUBLIC_URL}>
       <Switch>
@@ -19,10 +24,13 @@ function Routes(props) {
           render={renderProps => <Login {...renderProps} />} />
 
         <AuthRoute path='/' auth={props.auth}>
+          <Route exact path="/" render={(renderProps) => <Redirect to="/projects" {...renderProps} />} />
           <Layout>
-            <Route exact path="/projects" component={Project} />
-            <Route exact path="/users" component={User} />
-            <Route exact path="/projects/:projectId" component={ProjectDetail} />
+            <Route exact path="/projects" component={withUsers(Project)} />
+            {authRole === roles.ADMIN &&
+              <Route exact path="/users" component={withUsers(User)} />
+            }
+            <Route exact path="/projects/:projectId" component={withUsers(ProjectDetail)} />
             <Route exact path="/projects/:projectId/tasks/:taskId" component={TaskDetail} />
           </Layout>
         </AuthRoute>

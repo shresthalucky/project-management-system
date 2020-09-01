@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Table, Badge, Col, Card, Alert } from 'react-bootstrap';
 
 import Api from '../../api/ApiUtils';
 import { roles } from '../../roles';
-import { setUsers } from '../../actions/userActions';
+import { setUsers, addUser, disableUser } from '../../actions/userActions';
 import AppModal from '../../components/AppModal';
 class User extends React.Component {
 
@@ -12,44 +12,24 @@ class User extends React.Component {
     super(props);
 
     this.state = {
-      users: [],
       showModal: false,
       loading: true,
-      editUserId: '',
-      edit: {
+      newUserError: '',
+      editUser: {
+        id: '',
         username: '',
         roleId: '',
         password: '',
-        newPassword: ''
+        newPassword: '',
+        errorMessage: ''
+      },
+      newUser: {
+        username: '',
+        password: '',
+        roleId: roles.PROJECT_MANAGER,
+        errorMessage: ''
       }
     };
-
-  }
-
-  componentDidMount() {
-
-    const users = this.props.user.users;
-
-    if (users) {
-      this.setState({
-        users: users,
-        loading: false
-      });
-    }
-
-    this.fetchUsers();
-  }
-
-  fetchUsers = () => {
-    Api.get('/users')
-      .then(res => {
-        this.props.setUsers(res.data);
-        this.setState({
-          users: res.data,
-          loading: false
-        });
-      })
-      .catch(err => console.log(err));
   }
 
   toggleModal = () => {
@@ -58,133 +38,196 @@ class User extends React.Component {
     });
   }
 
-  handleNewUser = (e) => {
+  handleNewUserChange = (e) => {
+    this.setState({
+      newUser: {
+        ...this.state.newUser,
+        [e.target.name]: e.target.value,
+        errorMessage: ''
+      }
+    });
+  }
+
+  handleNewUserSubmit = (e) => {
     e.preventDefault();
 
     const data = {
-      username: e.target.username.value,
-      password: e.target.password.value,
-      roleId: e.target.role.value
+      username: this.state.newUser.username,
+      password: this.state.newUser.password,
+      roleId: Number(this.state.newUser.roleId)
     }
 
     Api.post('/users/register', data)
       .then(res => {
-        this.fetchUsers();
+        this.props.addUser(res.data);
+        this.setState({
+          newUser: {
+            username: '',
+            password: '',
+            roleId: roles.PROJECT_MANAGER,
+            errorMessage: ''
+          }
+        });
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        this.setState({
+          newUser: {
+            ...this.state.newUser,
+            errorMessage: err.response.data.message
+          }
+        })
+      });
   }
 
   handleEditUser = (user) => {
     this.setState({
-      editUserId: user.id,
-      edit: {
+      editUser: {
+        id: user.id,
         username: user.username,
-        roleId: user['role_id']
+        roleId: user.role.id
       }
     })
     this.toggleModal();
   }
 
-  handleOnEditChange = (e) => {
+  handleEditChange = (e) => {
     this.setState({
-      edit: {
-        ...this.state.edit,
-        [e.target.name]: e.target.value
+      editUser: {
+        ...this.state.editUser,
+        [e.target.name]: e.target.value,
+        errorMessage: ''
       }
     })
   }
 
-  submitEditUser = () => {
+  handleEditUserSubmit = () => {
     const data = {
-      ...this.state.edit,
-      roleId: Number(this.state.edit.roleId)
+      username: this.state.editUser.username,
+      password: this.state.editUser.password,
+      roleId: Number(this.state.editUser.roleId)
     }
-    
-    Api.put(`/users/${this.state.editUserId}`, data)
+
+    Api.put(`/users/${this.state.editUser.id}`, data)
       .then(res => {
-        this.fetchUsers();
+        this.props.addUser(res.data);
+        this.toggleModal();
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        this.setState({
+          editUser: {
+            ...this.state.editUser,
+            errorMessage: err.response.data.message
+          }
+        })
+      });
   }
 
   handleDeleteUser = (userId) => {
 
     Api.delete(`/users/${userId}`)
       .then(() => {
-        console.log('deleted');
-        this.fetchUsers();
+        this.props.disableUser(userId);
       })
       .catch(err => console.log(err));
   }
 
   render() {
 
-    const users = this.state.users.filter(user => user.active === true);
+    const users = this.props.users;
 
     return (
       <div>
-        <AppModal show={this.state.showModal} hideHandler={this.toggleModal} submitHandler={this.submitEditUser} title="Edit User">
+        <AppModal show={this.state.showModal} hideHandler={this.toggleModal} submitHandler={this.handleEditUserSubmit} title="Edit User">
           <Form>
             <Form.Group>
               <Form.Label>Username</Form.Label>
-              <Form.Control type="text" name="username" value={this.state.edit.username} onChange={this.handleOnEditChange} />
+              <Form.Control type="text" name="username" value={this.state.editUser.username} onChange={this.handleEditChange} />
               <Form.Text className="text-muted">Must be unique</Form.Text>
             </Form.Group>
 
             <Form.Group>
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" name="password" value={this.state.edit.password} onChange={this.handleOnEditChange} />
+              <Form.Label>Current Password</Form.Label>
+              <Form.Control type="password" name="password" onChange={this.handleEditChange} />
+              <Form.Text className="text-muted">Required to apply changes</Form.Text>
             </Form.Group>
 
-            <Form.Group controlId="formGridState">
+            <Form.Group>
               <Form.Label>New Password</Form.Label>
-              <Form.Control type="password" name="newPassword" value={this.state.edit.newpassword} onChange={this.handleOnEditChange} />
+              <Form.Control type="password" name="newPassword" placeholder="optional" onChange={this.handleEditChange} />
             </Form.Group>
 
-            <Form.Group controlId="formGridState">
-              <Form.Label>Role</Form.Label>
-              <Form.Control as="select" name="roleId" defaultValue={this.state.edit.roleId} onChange={this.handleOnEditChange}>
-                <option value={roles.PROJECT_MANAGER}>Project Manager</option>
-                <option value={roles.TEAM_LEAD}>Team Lead</option>
-                <option value={roles.ENGINEER}>Engineer</option>
-              </Form.Control>
-            </Form.Group>
+            {this.state.editUser.roleId !== roles.ADMIN &&
+              <Form.Group>
+                <Form.Label>Role</Form.Label>
+                <Form.Control as="select" name="roleId" defaultValue={this.state.editUser.roleId} onChange={this.handleEditChange}>
+                  <option value={roles.PROJECT_MANAGER}>Project Manager</option>
+                  <option value={roles.TEAM_LEAD}>Team Lead</option>
+                  <option value={roles.ENGINEER}>Engineer</option>
+                </Form.Control>
+              </Form.Group>
+            }
 
+            {this.state.editUser.errorMessage &&
+              <Alert variant="danger">{this.state.editUser.errorMessage}</Alert>
+            }
           </Form>
         </AppModal>
 
-        <div>User</div>
+        <Card body className="mb-5">
+          <Form onSubmit={this.handleNewUserSubmit}>
+            <Form.Row>
+              <Form.Group as={Col} lg={4}>
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="text" name="username" onChange={this.handleNewUserChange} required />
+              </Form.Group>
 
-        <form onSubmit={this.handleNewUser}>
-          <div>
-            <label>Username</label>
-            <input type="text" name="username" />
-          </div>
-          <div>
-            <label>Password</label>
-            <input type="password" name="password" />
-          </div>
-          <div>
-            <label>Role</label>
-            <select name="role">
-              <option value={roles.PROJECT_MANAGER}>Project Manager</option>
-              <option value={roles.TEAM_LEAD}>Team Lead</option>
-              <option value={roles.ENGINEER}>Engineer</option>
-            </select>
-          </div>
-          <button type="submit">Add User</button>
-        </form>
+              <Form.Group as={Col} lg={4}>
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" name="password" onChange={this.handleNewUserChange} required />
+              </Form.Group>
 
-        {users.map(user => {
-          return (
-            <div key={user.id}>
-              <h3>{user.username}</h3>
-              <p>{user.role.type}</p>
-              <Button variant="primary" onClick={() => this.handleEditUser(user)}>Edit</Button>
-              <Button variant="secondary" onClick={() => this.handleDeleteUser(user.id)}>Delete</Button>
-            </div>
-          );
-        })}
+              <Form.Group as={Col} lg={4}>
+                <Form.Label>Role</Form.Label>
+                <Form.Control as="select" name="role">
+                  <option value={roles.PROJECT_MANAGER}>Project Manager</option>
+                  <option value={roles.TEAM_LEAD}>Team Lead</option>
+                  <option value={roles.ENGINEER}>Engineer</option>
+                </Form.Control>
+              </Form.Group>
+            </Form.Row>
+            {this.state.newUser.errorMessage &&
+              <Alert variant="danger">{this.state.newUser.errorMessage}</Alert>
+            }
+            <Button type="submit">Add New User</Button>
+          </Form>
+        </Card>
+
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => {
+              return (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.username} {user.active ? <Badge variant="success">Active</Badge> : <Badge variant="danger">Inactive</Badge>}</td>
+                  <td>{user.role.type}</td>
+                  <td>
+                    <Button size="sm" variant="info" onClick={() => this.handleEditUser(user)} disabled={!user.active}>Edit</Button>{' '}
+                    <Button size="sm" variant="danger" onClick={() => this.handleDeleteUser(user.id)} disabled={!user.active}>Delete</Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+
       </div>
     );
   }
@@ -193,14 +236,16 @@ class User extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    user: state.user,
+    users: Object.values(state.users),
     auth: state.auth
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setUsers: (users) => dispatch(setUsers(users))
+    setUsers: (users) => dispatch(setUsers(users)),
+    addUser: (user) => dispatch(addUser(user)),
+    disableUser: (id) => dispatch(disableUser(id))
   };
 };
 

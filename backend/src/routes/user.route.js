@@ -49,7 +49,7 @@ router.put(
   validateToken,
   HelperMiddleware.checkPermission('user', permissions.UPDATE),
   requestValidator(userSchema),
-  UserController.getUserByUsername,
+  UserController.getUserById,
   UserMiddleware.validatePassword,
   UserMiddleware.hasNewPassword,
   UserController.updateUser

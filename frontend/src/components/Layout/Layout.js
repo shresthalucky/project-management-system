@@ -8,7 +8,7 @@ import { logoutAuth } from '../../actions/authActions';
 function Layout({ children, auth, ...props }) {
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem('auth');
     props.logoutAuth();
   }
 

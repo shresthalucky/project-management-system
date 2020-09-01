@@ -8,7 +8,7 @@ import commentReducer from './commentReducer';
 
 const reducer = combineReducers({
   auth: authReducer,
-  user: userReducer,
+  users: userReducer,
   project: projectReducer,
   task: taskReducer,
   comment: commentReducer

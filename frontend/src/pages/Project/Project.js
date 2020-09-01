@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import Api from '../../api/ApiUtils';
 import AppModal from '../../components/AppModal';
 import { setProjectsList } from '../../actions/projectActions';
-import { setUsers } from '../../actions/userActions';
 import { roles } from '../../roles';
 
 class Project extends React.Component {
@@ -15,7 +14,6 @@ class Project extends React.Component {
     super(props);
 
     this.state = {
-      users: [],
       projects: [],
       loadingProjects: true,
       showModal: false,
@@ -28,7 +26,6 @@ class Project extends React.Component {
   }
 
   componentDidMount() {
-    const users = this.props.users;
     const projects = this.props.projectsList;
 
     if (projects) {
@@ -38,26 +35,7 @@ class Project extends React.Component {
       });
     }
 
-    if (users) {
-      this.setState({
-        users: users,
-        loading: false
-      });
-    }
-
     this.fetchProjects();
-  }
-
-  fetchUsers = () => {
-    Api.get('/users')
-      .then(res => {
-        this.props.setUsers(res.data);
-        this.setState({
-          users: res.data,
-          loading: false
-        });
-      })
-      .catch(err => console.log(err));
   }
 
   fetchProjects = () => {
@@ -70,8 +48,6 @@ class Project extends React.Component {
         this.props.setProjectsList(res.data);
       })
       .catch(err => console.log(err));
-
-    this.fetchUsers();
   }
 
   toggleModal = () => {
@@ -109,8 +85,8 @@ class Project extends React.Component {
   render() {
 
     const projects = this.props.projectsList;
-    const pm = this.state.users.filter(user => user['role_id'] === roles.PROJECT_MANAGER && user['active']);
-    
+    const pm = this.props.users.filter(user => user['role_id'] === roles.PROJECT_MANAGER && user['active']);
+
     return (
       <div>
 
@@ -157,13 +133,12 @@ class Project extends React.Component {
 const mapStateToProps = state => {
   return {
     projectsList: state.project.projectsList,
-    users: state.project.users
+    users: Object.values(state.users)
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setUsers: (users) => dispatch(setUsers(users)),
     setProjectsList: (projects) => dispatch(setProjectsList(projects))
   };
 };
