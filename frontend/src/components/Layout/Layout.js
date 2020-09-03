@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Container, Navbar, Nav, NavDropdown, Alert } from 'react-bootstrap';
 
 import AppNav from '../AppNav';
 import { logoutAuth } from '../../actions/authActions';
+import { unsetAlert } from '../../actions/alertActions';
 
 function Layout({ children, auth, ...props }) {
 
@@ -31,6 +32,15 @@ function Layout({ children, auth, ...props }) {
         </Container>
       </Navbar>
 
+      <Alert
+        variant={props.alert.type === 'ERROR' ? 'danger' : 'success'}
+        show={Boolean(props.alert.message)}
+        onClose={props.unsetAlert}
+        transition={false}
+        dismissible>
+        {props.alert.message}
+      </Alert>
+
       <main className="mt-5">
         <Container>
           {children}
@@ -42,13 +52,15 @@ function Layout({ children, auth, ...props }) {
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    alert: state.alert
   };
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     logoutAuth: () => dispatch(logoutAuth()),
+    unsetAlert: () => dispatch(unsetAlert())
   };
 };
 

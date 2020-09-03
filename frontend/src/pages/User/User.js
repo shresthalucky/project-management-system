@@ -2,10 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Button, Form, Table, Badge, Col, Card, Alert } from 'react-bootstrap';
 
-import Api from '../../api/ApiUtils';
 import { roles } from '../../roles';
-import { setUsers, addUser, disableUser } from '../../actions/userActions';
+import Api from '../../api/ApiUtils';
 import AppModal from '../../components/AppModal';
+import { setUsers, addUser, disableUser } from '../../actions/userActions';
+import { setErrorAlert, setSuccessAlert } from '../../actions/alertActions';
+import { handleError } from '../../utils/errorHandler';
 class User extends React.Component {
 
   constructor(props) {
@@ -26,8 +28,7 @@ class User extends React.Component {
       newUser: {
         username: '',
         password: '',
-        roleId: roles.PROJECT_MANAGER,
-        errorMessage: ''
+        roleId: roles.PROJECT_MANAGER
       }
     };
   }
@@ -42,8 +43,7 @@ class User extends React.Component {
     this.setState({
       newUser: {
         ...this.state.newUser,
-        [e.target.name]: e.target.value,
-        errorMessage: ''
+        [e.target.name]: e.target.value
       }
     });
   }
@@ -64,24 +64,20 @@ class User extends React.Component {
           newUser: {
             username: '',
             password: '',
-            roleId: roles.PROJECT_MANAGER,
-            errorMessage: ''
+            roleId: roles.PROJECT_MANAGER
           }
         });
+        this.props.setSuccessAlert('User create successful');
       })
       .catch(err => {
-        this.setState({
-          newUser: {
-            ...this.state.newUser,
-            errorMessage: err.response.data.message
-          }
-        })
+        handleError(err);
       });
   }
 
   handleEditUser = (user) => {
     this.setState({
       editUser: {
+        ...this.state.editUser,
         id: user.id,
         username: user.username,
         roleId: user.role.id
@@ -111,6 +107,7 @@ class User extends React.Component {
       .then(res => {
         this.props.addUser(res.data);
         this.toggleModal();
+        this.props.setSuccessAlert('User edit successful');
       })
       .catch(err => {
         this.setState({
@@ -127,8 +124,11 @@ class User extends React.Component {
     Api.delete(`/users/${userId}`)
       .then(() => {
         this.props.disableUser(userId);
+        this.props.setSuccessAlert('User delete successful');
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        this.props.setErrorAlert(err.response.data.message);
+      });
   }
 
   render() {
@@ -147,19 +147,19 @@ class User extends React.Component {
 
             <Form.Group>
               <Form.Label>Current Password</Form.Label>
-              <Form.Control type="password" name="password" onChange={this.handleEditChange} />
+              <Form.Control type="password" name="password" value={this.state.editUser.password} onChange={this.handleEditChange} />
               <Form.Text className="text-muted">Required to apply changes</Form.Text>
             </Form.Group>
 
             <Form.Group>
               <Form.Label>New Password</Form.Label>
-              <Form.Control type="password" name="newPassword" placeholder="optional" onChange={this.handleEditChange} />
+              <Form.Control type="password" name="newPassword" value={this.state.editUser.newPassword} placeholder="optional" onChange={this.handleEditChange} />
             </Form.Group>
 
             {this.state.editUser.roleId !== roles.ADMIN &&
               <Form.Group>
                 <Form.Label>Role</Form.Label>
-                <Form.Control as="select" name="roleId" defaultValue={this.state.editUser.roleId} onChange={this.handleEditChange}>
+                <Form.Control as="select" name="roleId" value={this.state.editUser.roleId} onChange={this.handleEditChange}>
                   <option value={roles.PROJECT_MANAGER}>Project Manager</option>
                   <option value={roles.TEAM_LEAD}>Team Lead</option>
                   <option value={roles.ENGINEER}>Engineer</option>
@@ -178,17 +178,18 @@ class User extends React.Component {
             <Form.Row>
               <Form.Group as={Col} lg={4}>
                 <Form.Label>Username</Form.Label>
-                <Form.Control type="text" name="username" onChange={this.handleNewUserChange} required />
+                <Form.Control type="text" name="username" value={this.state.newUser.username} onChange={this.handleNewUserChange} required />
+                <Form.Text className="text-muted">Must be unique</Form.Text>
               </Form.Group>
 
               <Form.Group as={Col} lg={4}>
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" name="password" onChange={this.handleNewUserChange} required />
+                <Form.Control type="password" name="password" value={this.state.newUser.password} onChange={this.handleNewUserChange} required />
               </Form.Group>
 
               <Form.Group as={Col} lg={4}>
                 <Form.Label>Role</Form.Label>
-                <Form.Control as="select" name="role">
+                <Form.Control as="select" name="role" value={this.state.newUser.roleId} onChange={this.handleNewUserChange}>
                   <option value={roles.PROJECT_MANAGER}>Project Manager</option>
                   <option value={roles.TEAM_LEAD}>Team Lead</option>
                   <option value={roles.ENGINEER}>Engineer</option>
@@ -245,7 +246,9 @@ const mapDispatchToProps = dispatch => {
   return {
     setUsers: (users) => dispatch(setUsers(users)),
     addUser: (user) => dispatch(addUser(user)),
-    disableUser: (id) => dispatch(disableUser(id))
+    disableUser: (id) => dispatch(disableUser(id)),
+    setErrorAlert: (message) => dispatch(setErrorAlert(message)),
+    setSuccessAlert: (message) => dispatch(setSuccessAlert(message))
   };
 };
 
